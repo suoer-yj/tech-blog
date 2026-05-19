@@ -106,7 +106,7 @@ const POSTS_PER_PAGE = 6;
       const currentPosts = allCategoryPosts.slice(startIndex, endIndex);
       const postsGrid = document.getElementById('posts-grid');
       postsGrid.innerHTML = currentPosts.map(post => `
-        <a href="/articles/${post.slug}" class="card group">
+        <article class="card group cursor-pointer" onclick="window.location.href='/articles/${post.slug}'">
           <div class="aspect-video bg-gray-200 overflow-hidden">
             <img src="${post.image}" alt="${post.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
           </div>
@@ -114,7 +114,7 @@ const POSTS_PER_PAGE = 6;
             <span class="text-xs text-gray-400 mb-2 block">${post.date}</span>
             <h2 class="font-semibold text-gray-800 group-hover:text-primary transition-colors line-clamp-2">${post.title}</h2>
           </div>
-        </a>
+        </article>
       `).join('');
     }
 
