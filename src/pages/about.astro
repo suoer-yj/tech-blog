@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="关于" description="了解技术博客的更多信息">
+  <!-- Breadcrumb -->
+  <nav class="mb-6 text-sm">
+    <ol class="flex items-center gap-2 text-gray-500">
+      <li><a href="/" class="hover:text-primary">首页</a></li>
+      <li>/</li>
+      <li class="text-gray-800">关于</li>
+    </ol>
+  </nav>
+
+  <!-- Content -->
+  <article class="card p-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">关于我们</h1>
+    
+    <div class="prose-article">
+      <p>
+        欢迎来到技术博客！我们专注于分享 AI 工具、软件开发、系统优化、网络安全等领域的实用技巧和最新资讯。
+      </p>
+
+      <h2>我们的使命</h2>
+      <p>
+        致力于为技术爱好者和普通用户提供高质量的原创内容，帮助大家更好地了解和使用现代技术工具。
+      </p>
+
+      <h2>内容方向</h2>
+      <ul>
+        <li><strong>AI 工具教程</strong>：ChatGPT、Claude、本地大模型部署指南</li>
+        <li><strong>免费资源推荐</strong>：优质免费软件、工具和服务</li>
+        <li><strong>系统优化</strong>：Windows、Mac、Linux 使用技巧</li>
+        <li><strong>网络安全</strong>：安全防护、隐私保护、漏洞预警</li>
+      </ul>
+
+      <h2>联系方式</h2>
+      <p>
+        商务合作：biz@example.com<br />
+        问题反馈：contact@example.com
+      </p>
+
+      <h2>订阅更新</h2>
+      <p>
+        关注我们的社交媒体，获取最新文章推送。
+      </p>
+    </div>
+  </article>
+</BaseLayout>

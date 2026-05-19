@@ -1,0 +1,98 @@
+---
+const categories = [
+  { name: 'AI', slug: 'ai', count: 12 },
+  { name: 'Claude', slug: 'claude', count: 5 },
+  { name: 'OpenAI', slug: 'openai', count: 8 },
+  { name: 'Windows', slug: 'windows', count: 6 },
+  { name: '网络安全', slug: 'security', count: 4 },
+  { name: '免费资源', slug: 'resources', count: 9 }
+];
+
+const isActive = false;
+---
+
+<header class="bg-white shadow-sm sticky top-0 z-50">
+  <div class="container mx-auto px-4 max-w-6xl">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+          <span class="text-white font-bold text-lg">T</span>
+        </div>
+        <span class="font-bold text-xl text-gray-800">技术博客</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center gap-6">
+        <a href="/" class="text-gray-600 hover:text-primary transition-colors">首页</a>
+        <div class="relative group">
+          <button class="flex items-center gap-1 text-gray-600 hover:text-primary transition-colors">
+            分类
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="absolute left-0 mt-2 w-40 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+            <div class="py-2">
+              {categories.map(cat => (
+                <a href={`/categories/${cat.slug}`} class="block px-4 py-2 text-gray-600 hover:bg-gray-50 hover:text-primary">
+                  {cat.name}
+                  <span class="text-gray-400 text-xs ml-1">({cat.count})</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+        <a href="/tags" class="text-gray-600 hover:text-primary transition-colors">标签</a>
+        <a href="/about" class="text-gray-600 hover:text-primary transition-colors">关于</a>
+      </nav>
+
+      <!-- Search -->
+      <div class="hidden md:flex items-center">
+        <div class="relative">
+          <input 
+            type="text" 
+            placeholder="搜索文章..." 
+            class="w-48 px-4 py-2 pl-10 text-sm border border-gray-200 rounded-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+          />
+          <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button class="md:hidden p-2 text-gray-600" id="mobile-menu-btn">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="md:hidden hidden bg-white border-t" id="mobile-menu">
+    <div class="px-4 py-4 space-y-3">
+      <a href="/" class="block py-2 text-gray-600">首页</a>
+      <div class="py-2">
+        <span class="text-gray-500 text-sm">分类</span>
+        <div class="mt-2 flex flex-wrap gap-2">
+          {categories.map(cat => (
+            <a href={`/categories/${cat.slug}`} class="tag">{cat.name}</a>
+          ))}
+        </div>
+      </div>
+      <a href="/tags" class="block py-2 text-gray-600">标签</a>
+      <a href="/about" class="block py-2 text-gray-600">关于</a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  
+  menuBtn?.addEventListener('click', () => {
+    mobileMenu?.classList.toggle('hidden');
+  });
+</script>

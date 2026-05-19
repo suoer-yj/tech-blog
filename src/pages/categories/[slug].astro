@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+  const categories = ['ai', 'claude', 'openai', 'windows', 'security', 'resources'];
+  return categories.map(slug => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+
+const categoryNames: Record<string, string> = {
+  'ai': 'AI',
+  'claude': 'Claude',
+  'openai': 'OpenAI',
+  'windows': 'Windows',
+  'security': '网络安全',
+  'resources': '免费资源'
+};
+
+const categoryPosts = [
+  { title: 'Windows 本地 AI 又升级了！llama.cpp 官方支持', date: '2026-05-18', slug: 'windows-local-ai', image: 'https://picsum.photos/seed/ai1/400/200' },
+  { title: 'Claude Code + Ollama 太强了！免费本地 AI 开发助手', date: '2026-05-15', slug: 'claude-code-ollama', image: 'https://picsum.photos/seed/claude/400/200' },
+  { title: 'AI 开发包大规模投毒事件分析', date: '2026-05-12', slug: 'ai-packages-attack', image: 'https://picsum.photos/seed/npm/400/200' },
+  { title: 'Sulphur 2 AI 视频模型本地部署实测', date: '2026-05-11', slug: 'sulphur-2', image: 'https://picsum.photos/seed/video/400/200' },
+  { title: 'Hermes + Qwen3.6 本地最强 Agent 组合', date: '2026-05-03', slug: 'hermes-qwen', image: 'https://picsum.photos/seed/agent/400/200' },
+  { title: 'ChatGPT Images 2.0 免费接入教程', date: '2026-04-29', slug: 'chatgpt-images', image: 'https://picsum.photos/seed/images/400/200' }
+];
+---
+
+<BaseLayout title={`${categoryNames[slug] || slug} - 分类`}>
+  <!-- Breadcrumb -->
+  <nav class="mb-6 text-sm">
+    <ol class="flex items-center gap-2 text-gray-500">
+      <li><a href="/" class="hover:text-primary">首页</a></li>
+      <li>/</li>
+      <li class="text-gray-800">分类</li>
+      <li>/</li>
+      <li class="text-gray-800">{categoryNames[slug] || slug}</li>
+    </ol>
+  </nav>
+
+  <!-- Header -->
+  <header class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">
+      分类: {categoryNames[slug] || slug}
+    </h1>
+    <p class="text-gray-500">
+      共 {categoryPosts.length} 篇文章
+    </p>
+  </header>
+
+  <!-- Posts Grid -->
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {categoryPosts.map(post => (
+      <a href={`/articles/${post.slug}`} class="card group">
+        <div class="aspect-video bg-gray-200 overflow-hidden">
+          <img 
+            src={post.image} 
+            alt={post.title}
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+        <div class="p-4">
+          <span class="text-xs text-gray-400 mb-2 block">{post.date}</span>
+          <h2 class="font-semibold text-gray-800 group-hover:text-primary transition-colors line-clamp-2">
+            {post.title}
+          </h2>
+        </div>
+      </a>
+    ))}
+  </div>
+
+  <!-- Pagination -->
+  <div class="mt-12 flex justify-center">
+    <nav class="flex items-center gap-2">
+      <button class="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 disabled:opacity-50" disabled>
+        上一页
+      </button>
+      <span class="px-3 py-2 text-sm">第 1 页 / 共 2 页</span>
+      <button class="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50">
+        下一页
+      </button>
+    </nav>
+  </div>
+</BaseLayout>

@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const popularTags = [
+  { name: 'AI', slug: 'ai', count: 45 },
+  { name: 'Claude', slug: 'claude', count: 12 },
+  { name: 'OpenAI', slug: 'openai', count: 18 },
+  { name: 'Windows', slug: 'windows', count: 15 },
+  { name: 'Windows 11', slug: 'windows-11', count: 8 },
+  { name: '网络安全', slug: 'security', count: 8 },
+  { name: '免费资源', slug: 'resources', count: 22 },
+  { name: 'Python', slug: 'python', count: 10 },
+  { name: 'Mac', slug: 'mac', count: 6 },
+  { name: 'Linux', slug: 'linux', count: 5 },
+  { name: 'Gemini', slug: 'gemini', count: 7 },
+  { name: 'Qwen', slug: 'qwen', count: 9 },
+  { name: 'Llama', slug: 'llama', count: 6 },
+  { name: 'YouTube', slug: 'youtube', count: 14 },
+  { name: 'Grok', slug: 'grok', count: 4 },
+  { name: 'Deepseek', slug: 'deepseek', count: 8 }
+];
+---
+
+<BaseLayout title="标签">
+  <!-- Breadcrumb -->
+  <nav class="mb-6 text-sm">
+    <ol class="flex items-center gap-2 text-gray-500">
+      <li><a href="/" class="hover:text-primary">首页</a></li>
+      <li>/</li>
+      <li class="text-gray-800">标签</li>
+    </ol>
+  </nav>
+
+  <!-- Header -->
+  <header class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">标签</h1>
+    <p class="text-gray-500">
+      共 {popularTags.length} 个标签
+    </p>
+  </header>
+
+  <!-- Tags Cloud -->
+  <div class="card p-8">
+    <div class="flex flex-wrap gap-3">
+      {popularTags.map(tag => (
+        <a 
+          href={`/tags/${tag.slug}`} 
+          class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-primary hover:text-white rounded-full transition-colors group"
+        >
+          <span>{tag.name}</span>
+          <span class="text-xs opacity-60 group-hover:opacity-80">({tag.count})</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

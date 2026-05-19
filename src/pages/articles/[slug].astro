@@ -1,0 +1,216 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+  const posts = [
+    { slug: 'windows-local-ai-llama-cpp-upgrade', title: 'Windows 本地 AI 又升级了！llama.cpp 官方支持 CUDA 13 / Vulkan / HIP / SYCL，一键跑 GGUF 无审查模型！', category: 'AI', date: '2026-05-18' },
+    { slug: 'claude-code-ollama-local-ai', title: 'Claude Code + Ollama 太强了！免费本地 AI 开发助手来了！', category: 'Claude', date: '2026-05-15' },
+    { slug: 'windows-11-backup-restore-guide', title: 'Windows 11 最完整备份与还原教程', category: 'Windows', date: '2026-05-14' },
+    { slug: 'bitlocker-downgrade-attack', title: 'BitLocker 被 5 分钟绕过？', category: '网络安全', date: '2026-05-12' },
+    { slug: 'npm-ai-packages-supply-chain-attack', title: 'AI 开发包大规模投毒事件分析', category: 'AI', date: '2026-05-12' },
+    { slug: 'sulphur-2-ai-video-model', title: 'Sulphur 2 AI 视频模型本地部署实测', category: 'AI', date: '2026-05-11' }
+  ];
+  
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post }
+  }));
+}
+
+const { post } = Astro.props;
+
+const postData = {
+  title: post.title || 'Windows 本地 AI 又升级了！llama.cpp 官方支持 CUDA 13 / Vulkan / HIP / SYCL，一键跑 GGUF 无审查模型！',
+  category: post.category || 'AI',
+  date: post.date || '2026-05-18',
+  author: 'admin',
+  views: 1234,
+  tags: ['AI', 'llama.cpp', 'GGUF', 'Windows'],
+  image: 'https://picsum.photos/seed/ai1/1200/600',
+  slug: post.slug
+};
+
+const relatedPosts = [
+  { title: 'Claude Code + Ollama 太强了！免费本地 AI 开发助手', slug: 'claude-code-ollama-local-ai', image: 'https://picsum.photos/seed/claude/400/200' },
+  { title: 'Sulphur 2 AI 视频模型本地部署实测', slug: 'sulphur-2-ai-video-model', image: 'https://picsum.photos/seed/video/400/200' },
+  { title: 'GPT-5.5 Instant 正式上线免费使用', slug: 'gpt-5-5', image: 'https://picsum.photos/seed/openai/400/200' }
+];
+---
+
+<BaseLayout title={postData.title} description={`${postData.title} - 详细教程`}>
+  <article>
+    <!-- Breadcrumb -->
+    <nav class="mb-6 text-sm">
+      <ol class="flex items-center gap-2 text-gray-500">
+        <li><a href="/" class="hover:text-primary">首页</a></li>
+        <li>/</li>
+        <li><a href={`/categories/${postData.category.toLowerCase()}`} class="hover:text-primary">{postData.category}</a></li>
+        <li>/</li>
+        <li class="text-gray-800 truncate max-w-xs">{postData.title}</li>
+      </ol>
+    </nav>
+
+    <!-- Article Header -->
+    <header class="mb-8">
+      <div class="flex flex-wrap gap-2 mb-4">
+        {postData.tags.map(tag => (
+          <a href={`/tags/${tag.toLowerCase()}`} class="tag">{tag}</a>
+        ))}
+      </div>
+      
+      <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+        {postData.title}
+      </h1>
+      
+      <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+        <span class="flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          {postData.author}
+        </span>
+        <span class="flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          {postData.date}
+        </span>
+        <span class="flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+          {postData.views} 阅读
+        </span>
+      </div>
+    </header>
+
+    <!-- Featured Image -->
+    <figure class="mb-8 rounded-xl overflow-hidden">
+      <img src={postData.image} alt={postData.title} class="w-full" />
+    </figure>
+
+    <!-- Article Content -->
+    <div class="prose-article">
+      <h2>前言</h2>
+      <p>
+        llama.cpp 是一款广受欢迎的开源工具，它允许用户在本地运行各种大型语言模型（LLM），无需云服务或 API。
+        最近的更新带来了重大突破，现在支持 CUDA 13、Vulkan、HIP 和 SYCL 等多种后端，大幅提升了在不同硬件上的兼容性。
+      </p>
+
+      <h2>什么是 GGUF 模型？</h2>
+      <p>
+        GGUF（GPT-Generated Unified Format）是一种专门为 llama.cpp 设计的模型格式。
+        它具有以下优势：
+      </p>
+      <ul>
+        <li><strong>量化支持</strong>：支持多种量化级别（Q2_K 到 Q8_0），大幅减少模型大小</li>
+        <li><strong>兼容性</strong>：跨平台支持，可在各种操作系统上运行</li>
+        <li><strong>性能优化</strong>：针对 CPU 和 GPU 进行了优化</li>
+        <li><strong>无审查</strong>：可以选择不经过任何安全过滤的模型版本</li>
+      </ul>
+
+      <h2>安装步骤</h2>
+      
+      <h3>1. 下载 llama.cpp</h3>
+      <pre><code>git clone https://github.com/ggerganov/llama.cpp
+cd llama.cpp
+mkdir build && cd build
+cmake ..
+cmake --build . --config Release</code></pre>
+
+      <h3>2. 下载模型</h3>
+      <p>推荐从 Hugging Face 下载 GGUF 格式的模型：</p>
+      <pre><code># 以 Qwen 模型为例
+huggingface-cli download your-username/Qwen-GGUF Qwen-7B-Q4_K_M.gguf</code></pre>
+
+      <h3>3. 运行模型</h3>
+      <pre><code>./llama-server -m Qwen-7B-Q4_K_M.gguf -c 4096 --host 0.0.0.0 --port 8080</code></pre>
+
+      <h2>后端选择建议</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>后端</th>
+            <th>适用场景</th>
+            <th>性能</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CUDA</td>
+            <td>NVIDIA 显卡</td>
+            <td>最佳</td>
+          </tr>
+          <tr>
+            <td>Vulkan</td>
+            <td>AMD/Intel 显卡或 CPU</td>
+            <td>良好</td>
+          </tr>
+          <tr>
+            <td>HIP</td>
+            <td>AMD ROCm</td>
+            <td>良好</td>
+          </tr>
+          <tr>
+            <td>SYCL</td>
+            <td>Intel GPU/CPU</td>
+            <td>中等</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>常见问题</h2>
+      
+      <h3>Q: 内存不足怎么办？</h3>
+      <p>使用更高强度的量化，如 Q2_K 而非 Q8_0，可以显著降低内存需求。</p>
+
+      <h3>Q: 速度很慢怎么优化？</h3>
+      <p>确保使用支持 AVX2 的 CPU，或使用 GPU 加速。</p>
+
+      <h2>总结</h2>
+      <p>
+        llama.cpp 的更新让本地 AI 模型运行变得更加简单和高效。无论你使用的是 NVIDIA、AMD 还是 Intel 显卡，
+        都能找到合适的加速方案。快去试试吧！
+      </p>
+    </div>
+
+    <!-- Tags -->
+    <div class="mt-8 pt-8 border-t">
+      <div class="flex flex-wrap gap-2">
+        <span class="text-gray-500">标签：</span>
+        {postData.tags.map(tag => (
+          <a href={`/tags/${tag.toLowerCase()}`} class="tag">{tag}</a>
+        ))}
+      </div>
+    </div>
+
+    <!-- Comments (Placeholder) -->
+    <div class="mt-8 pt-8 border-t">
+      <h3 class="text-lg font-semibold mb-4">评论</h3>
+      <div class="bg-gray-50 rounded-lg p-6 text-center text-gray-500">
+        <p>评论功能已集成 Giscus</p>
+        <p class="text-sm mt-2">使用 GitHub 账号登录后可发表评论</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- Related Posts -->
+  <section class="mt-12">
+    <h3 class="text-lg font-semibold mb-6">相关推荐</h3>
+    <div class="grid md:grid-cols-3 gap-4">
+      {relatedPosts.map(related => (
+        <a href={`/articles/${related.slug}`} class="card group">
+          <div class="aspect-video bg-gray-200 overflow-hidden">
+            <img src={related.image} alt={related.title} class="w-full h-full object-cover" />
+          </div>
+          <div class="p-3">
+            <h4 class="text-sm font-medium text-gray-800 group-hover:text-primary line-clamp-2">
+              {related.title}
+            </h4>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

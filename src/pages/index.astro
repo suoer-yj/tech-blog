@@ -1,0 +1,161 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const featuredPosts = [
+  {
+    title: 'Windows 本地 AI 又升级了！llama.cpp 官方支持 CUDA 13 / Vulkan / HIP / SYCL，一键跑 GGUF 无审查模型！',
+    excerpt: 'llama.cpp 官方最近发布了重大更新，现在支持 CUDA 13、Vulkan、HIP 和 SYCL 等多种后端，让本地 AI 模型运行更加便捷...',
+    image: 'https://picsum.photos/seed/ai1/800/400',
+    category: 'AI',
+    date: '2026-05-18',
+    slug: 'windows-local-ai-llama-cpp-upgrade'
+  },
+  {
+    title: 'Claude Code + Ollama 太强了！免费本地 AI 开发助手来了！无需 Claude API！',
+    excerpt: '今天给大家介绍一个超强组合：Claude Code + Ollama，可以在本地运行 AI 编程助手，完全免费，无需 API Key...',
+    image: 'https://picsum.photos/seed/claude/800/400',
+    category: 'Claude',
+    date: '2026-05-15',
+    slug: 'claude-code-ollama-local-ai'
+  }
+];
+
+const recentPosts = [
+  {
+    title: 'Windows 11 最完整备份与还原教程：重装后软件、数据一个不丢！',
+    excerpt: '重装系统最怕的就是数据丢失，今天教大家如何完整备份 Windows 11，包括系统镜像、应用程序和用户数据...',
+    image: 'https://picsum.photos/seed/win11/800/400',
+    category: 'Windows',
+    date: '2026-05-14',
+    slug: 'windows-11-backup-restore-guide'
+  },
+  {
+    title: 'Windows 11 BitLocker 被 5 分钟绕过？BitUnlocker 降级攻击到底有多危险!',
+    excerpt: '安全研究人员发现了一种新的 BitLocker 降级攻击方法，可以在 5 分钟内绕过磁盘加密...',
+    image: 'https://picsum.photos/seed/security/800/400',
+    category: '网络安全',
+    date: '2026-05-12',
+    slug: 'bitlocker-downgrade-attack'
+  },
+  {
+    title: 'AI 开发包大规模投毒：Mistral、TanStack、Guardrails AI 集体中招',
+    excerpt: 'npm 供应链再次出现大规模投毒事件，多个知名 AI 开发包被发现包含恶意代码...',
+    image: 'https://picsum.photos/seed/npm/800/400',
+    category: 'AI',
+    date: '2026-05-12',
+    slug: 'npm-ai-packages-supply-chain-attack'
+  },
+  {
+    title: '爆火的"无审查"AI 视频模型来了！Sulphur 2 本地部署实测',
+    excerpt: 'Sulphur 2 是一个新兴的 AI 视频生成模型，主打"无审查"特性，支持本地部署...',
+    image: 'https://picsum.photos/seed/video/800/400',
+    category: 'AI',
+    date: '2026-05-11',
+    slug: 'sulphur-2-ai-video-model'
+  },
+  {
+    title: 'Bitcoin 挖矿进入低利润时代？比特币 8 万美元附近，矿企仍然亏损',
+    excerpt: '尽管比特币价格维持在 8 万美元附近，但多数矿企仍然处于亏损状态...',
+    image: 'https://picsum.photos/seed/bitcoin/800/400',
+    category: '挖矿',
+    date: '2026-05-11',
+    slug: 'bitcoin-mining-low-profit-era'
+  },
+  {
+    title: '紧急预警！JDownloader 下载器遭黑客入侵',
+    excerpt: 'JDownloader 用户请注意！该软件在 5 月 6-7 日期间被黑客入侵，下载此期间安装的用户请立即查毒...',
+    image: 'https://picsum.photos/seed/jdownloader/800/400',
+    category: '网络安全',
+    date: '2026-05-11',
+    slug: 'jdownloader-hack-warning'
+  }
+];
+---
+
+<BaseLayout title="首页">
+  <!-- Hero Section -->
+  <section class="mb-12">
+    <div class="bg-gradient-to-r from-primary to-blue-600 rounded-2xl p-6 md:p-8 text-white">
+      <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4">欢迎来到技术博客</h1>
+      <p class="text-blue-100 text-base md:text-lg">探索 AI 工具、编程技巧、系统优化与网络安全</p>
+    </div>
+  </section>
+
+  <!-- Featured Posts -->
+  <section class="mb-12">
+    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+      <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M10 2l2.09 5.26L18 8.27l-4 3.91 1 5.82L10 15l-5 2.91 1-5.82-4-3.91 5.91-.91L10 2z" />
+      </svg>
+      精选文章
+    </h2>
+    <div class="grid md:grid-cols-2 gap-6">
+      {featuredPosts.map(post => (
+        <a href={`/articles/${post.slug}`} class="card group">
+          <div class="aspect-video bg-gray-200 overflow-hidden">
+            <img 
+              src={post.image} 
+              alt={post.title}
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+          <div class="p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="tag">{post.category}</span>
+              <span class="text-xs text-gray-400">{post.date}</span>
+            </div>
+            <h3 class="font-semibold text-gray-800 group-hover:text-primary transition-colors line-clamp-2">
+              {post.title}
+            </h3>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Recent Posts -->
+  <section>
+    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+      <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      最新文章
+    </h2>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {recentPosts.map(post => (
+        <a href={`/articles/${post.slug}`} class="card group">
+          <div class="aspect-video bg-gray-200 overflow-hidden">
+            <img 
+              src={post.image} 
+              alt={post.title}
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+          <div class="p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="tag">{post.category}</span>
+              <span class="text-xs text-gray-400">{post.date}</span>
+            </div>
+            <h3 class="font-semibold text-gray-800 group-hover:text-primary transition-colors line-clamp-2 mb-2">
+              {post.title}
+            </h3>
+            <p class="text-sm text-gray-500 line-clamp-2">{post.excerpt}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Pagination -->
+  <div class="mt-12 flex justify-center">
+    <nav class="flex items-center gap-2">
+      <button class="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 disabled:opacity-50" disabled>
+        上一页
+      </button>
+      <span class="px-3 py-2 text-sm">第 1 页 / 共 10 页</span>
+      <button class="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50">
+        下一页
+      </button>
+    </nav>
+  </div>
+</BaseLayout>
