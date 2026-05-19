@@ -1,27 +1,32 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { categorySlugMap, tagSlugMap, toPostData } from '../../lib/slug-utils';
 
-const popularTags = [
-  { name: 'AI', slug: 'ai', count: 45 },
-  { name: 'Claude', slug: 'claude', count: 12 },
-  { name: 'OpenAI', slug: 'openai', count: 18 },
-  { name: 'Windows', slug: 'windows', count: 15 },
-  { name: 'Windows 11', slug: 'windows-11', count: 8 },
-  { name: '网络安全', slug: 'security', count: 8 },
-  { name: '免费资源', slug: 'resources', count: 22 },
-  { name: 'Python', slug: 'python', count: 10 },
-  { name: 'Mac', slug: 'mac', count: 6 },
-  { name: 'Linux', slug: 'linux', count: 5 },
-  { name: 'Gemini', slug: 'gemini', count: 7 },
-  { name: 'Qwen', slug: 'qwen', count: 9 },
-  { name: 'Llama', slug: 'llama', count: 6 },
-  { name: 'YouTube', slug: 'youtube', count: 14 },
-  { name: 'Grok', slug: 'grok', count: 4 },
-  { name: 'Deepseek', slug: 'deepseek', count: 8 }
-];
+// 获取所有文章
+const allPostsRaw = await getCollection('blog');
+
+// 获取所有文章（用于侧边栏）
+const allPosts = allPostsRaw.map(toPostData).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+// 动态计算标签列表
+const tagMap = new Map<string, number>();
+allPosts.forEach(post => {
+  post.tags.forEach(tag => {
+    const count = tagMap.get(tag) || 0;
+    tagMap.set(tag, count + 1);
+  });
+});
+const popularTags = Array.from(tagMap.entries())
+  .sort((a, b) => b[1] - a[1])
+  .map(([name, count]) => ({
+    name,
+    slug: tagSlugMap[name] || name.toLowerCase(),
+    count,
+  }));
 ---
 
-<BaseLayout title="标签">
+<BaseLayout title="标签" allPosts={allPosts}>
   <!-- Breadcrumb -->
   <nav class="mb-6 text-sm">
     <ol class="flex items-center gap-2 text-gray-500">
@@ -43,8 +48,8 @@ const popularTags = [
   <div class="card p-8">
     <div class="flex flex-wrap gap-3">
       {popularTags.map(tag => (
-        <a 
-          href={`/tags/${tag.slug}`} 
+        <a
+          href={`/tags/${tag.slug}`}
           class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-primary hover:text-white rounded-full transition-colors group"
         >
           <span>{tag.name}</span>

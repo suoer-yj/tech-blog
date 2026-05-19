@@ -1,31 +1,43 @@
 ---
-const recentPosts = [
-  { title: 'Windows 本地 AI 又升级了！llama.cpp 官方支持 CUDA 13', date: '2026-05-18', slug: 'windows-local-ai-llama-cpp-upgrade' },
-  { title: 'Claude Code + Ollama 本地 AI 开发助手教程', date: '2026-05-15', slug: 'claude-code-ollama-local-ai' },
-  { title: 'Windows 11 最完整备份与还原教程', date: '2026-05-14', slug: 'windows-11-backup-restore-guide' },
-  { title: 'BitLocker 被 5 分钟绕过？安全风险解析', date: '2026-05-12', slug: 'bitlocker-downgrade-attack' },
-  { title: 'AI 开发包大规模投毒事件分析', date: '2026-05-12', slug: 'npm-ai-packages-supply-chain-attack' }
-];
+import { categorySlugMap, tagSlugMap, type PostData } from '../lib/slug-utils';
 
-const popularTags = [
-  { name: 'AI', slug: 'ai', count: 45 },
-  { name: 'Claude', slug: 'claude', count: 12 },
-  { name: 'OpenAI', slug: 'openai', count: 18 },
-  { name: 'Windows', slug: 'windows', count: 15 },
-  { name: '网络安全', slug: 'security', count: 8 },
-  { name: '免费资源', slug: 'resources', count: 22 },
-  { name: 'Python', slug: 'python', count: 10 },
-  { name: 'Mac', slug: 'mac', count: 6 }
-];
+interface Props {
+  allPosts?: PostData[];
+}
 
-const categories = [
-  { name: 'AI', slug: 'ai', count: 12 },
-  { name: 'OpenAI', slug: 'openai', count: 8 },
-  { name: 'Claude', slug: 'claude', count: 5 },
-  { name: 'Windows', slug: 'windows', count: 6 },
-  { name: '网络安全', slug: 'security', count: 4 },
-  { name: '免费资源', slug: 'resources', count: 9 }
-];
+const { allPosts = [] } = Astro.props;
+
+// 动态计算近期文章（取前 5 篇）
+const recentPosts = allPosts.slice(0, 5);
+
+// 动态计算分类列表
+const categoryMap = new Map<string, number>();
+allPosts.forEach(post => {
+  const count = categoryMap.get(post.category) || 0;
+  categoryMap.set(post.category, count + 1);
+});
+const categories = Array.from(categoryMap.entries()).map(([name, count]) => ({
+  name,
+  slug: categorySlugMap[name] || name.toLowerCase(),
+  count,
+}));
+
+// 动态计算标签列表
+const tagMap = new Map<string, number>();
+allPosts.forEach(post => {
+  post.tags.forEach(tag => {
+    const count = tagMap.get(tag) || 0;
+    tagMap.set(tag, count + 1);
+  });
+});
+const popularTags = Array.from(tagMap.entries())
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 10)
+  .map(([name, count]) => ({
+    name,
+    slug: tagSlugMap[name] || name.toLowerCase(),
+    count,
+  }));
 ---
 
 <div class="space-y-6">
@@ -33,9 +45,9 @@ const categories = [
   <div class="card p-4">
     <h3 class="font-semibold text-gray-800 mb-4">搜索</h3>
     <div class="relative">
-      <input 
-        type="text" 
-        placeholder="搜索文章..." 
+      <input
+        type="text"
+        placeholder="搜索文章..."
         class="w-full px-4 py-2 pl-10 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-primary"
       />
       <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -2,15 +2,29 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Sidebar from '../components/Sidebar.astro';
+import { categorySlugMap, type PostData } from '../lib/slug-utils';
 import '../styles/global.css';
 
 interface Props {
   title: string;
   description?: string;
   image?: string;
+  allPosts?: PostData[];
 }
 
-const { title, description = '技术博客 - 分享AI、编程与科技干货', image } = Astro.props;
+const { title, description = '技术博客 - 分享AI、编程与科技干货', image, allPosts } = Astro.props;
+
+// 从 allPosts 动态计算分类列表
+const categoryMap = new Map<string, number>();
+(allPosts || []).forEach(post => {
+  const count = categoryMap.get(post.category) || 0;
+  categoryMap.set(post.category, count + 1);
+});
+const headerCategories = Array.from(categoryMap.entries()).map(([name, count]) => ({
+  name,
+  slug: categorySlugMap[name] || name.toLowerCase(),
+  count,
+}));
 ---
 
 <!DOCTYPE html>
@@ -21,7 +35,7 @@ const { title, description = '技术博客 - 分享AI、编程与科技干货', 
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title} | 技术博客</title>
-    
+
     <!-- Open Graph -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -29,19 +43,19 @@ const { title, description = '技术博客 - 分享AI、编程与科技干货', 
     {image && <meta property="og:image" content={image} />}
   </head>
   <body class="min-h-screen flex flex-col">
-    <Header />
-    
+    <Header categories={headerCategories} />
+
     <main class="flex-1 container mx-auto px-4 py-8 max-w-6xl">
       <div class="flex flex-col lg:flex-row gap-8">
         <article class="flex-1 min-w-0">
           <slot />
         </article>
         <aside class="lg:w-72 flex-shrink-0">
-          <Sidebar />
+          <Sidebar allPosts={allPosts} />
         </aside>
       </div>
     </main>
-    
+
     <Footer />
   </body>
 </html>
