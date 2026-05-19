@@ -14,8 +14,8 @@ const allPostsRawSorted = allPostsRaw.sort((a, b) => {
 // 转换为前端需要的格式
 const allPosts = allPostsRawSorted.map(toPostData);
 
-// 分页配置
-const POSTS_PER_PAGE = 6;
+// 分页配置 - 3列5行 = 15篇文章每页
+const POSTS_PER_PAGE = 15;
 const totalPosts = allPosts.length;
 const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
 
