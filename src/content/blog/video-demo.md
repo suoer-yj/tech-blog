@@ -11,26 +11,35 @@ featured: false
 
 ## 视频嵌入功能介绍
 
-现在您可以在博客文章中方便地嵌入 YouTube 和 Bilibili 视频了！只需在 Markdown 文件中添加简单的注释标记，系统会自动渲染出漂亮的视频播放器。
+现在您可以在博客文章中方便地嵌入 YouTube 和 Bilibili 视频了！只需在 Markdown 文件中添加简单的代码块标记，系统会自动渲染出漂亮的视频播放器。
 
 ## 使用方法
 
-在 Markdown 文件的任意位置添加以下格式的注释：
+在 Markdown 文件的任意位置添加以下格式的代码块：
 
+​```video
+youtube:VIDEO_ID:视频标题
+​```
 
+​```video
+bilibili:BVID:视频标题
+​```
 
 ### YouTube 视频示例
 
 下面是一个 YouTube 视频的嵌入演示：
 
-
-<!-- video:youtube:dQw4w9WgXcQ:这里是youtube视频 -->
+```video
+youtube:dQw4w9WgXcQ:这里是youtube视频
+```
 
 ### Bilibili 视频示例
 
 下面是一个 Bilibili 视频的嵌入演示：
 
-<!-- video:bilibili:BV1GJ411x7h7:Bilibili 视频演示 -->
+```video
+bilibili:BV1GJ411x7h7:Bilibili 视频演示
+```
 
 ## 功能特点
 
