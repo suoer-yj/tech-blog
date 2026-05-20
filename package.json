@@ -4,8 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev --host",
-    "prebuild": "node scripts/fetch-bilibili-covers.js",
-    "build": "npm run prebuild && astro build",
+    "build": "astro build",
     "preview": "astro preview --host"
   },
   "dependencies": {
