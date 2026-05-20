@@ -179,26 +179,8 @@ const detailImage = post.data.image.replace('800/400', '1200/600');
         });
       }
       
-      if (!isYoutube) {
-        const thumb = container.querySelector('.bilibili-thumb');
-        if (thumb) {
-          const bvid = videoId.startsWith('BV') ? videoId : 'BV' + videoId;
-          fetch('https://api.bilibili.com/x/web-interface/view?bvid=' + bvid)
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-              if (data.data && data.data.pic) {
-                const img = document.createElement('img');
-                img.src = data.data.pic;
-                img.alt = '视频封面';
-                img.className = 'w-full h-full object-cover transition-transform duration-300 group-hover:scale-105';
-                img.loading = 'lazy';
-                thumb.innerHTML = '';
-                thumb.appendChild(img);
-              }
-            })
-            .catch(function() {});
-        }
-      }
+      // Bilibili 封面通过 API 获取会被 CORS 拦截，直接显示占位符即可
+      // 点击播放后由 Bilibili 播放器展示封面
     }
     
     document.addEventListener('DOMContentLoaded', function() {
