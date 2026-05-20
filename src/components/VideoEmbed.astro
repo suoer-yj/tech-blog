@@ -14,8 +14,10 @@ let thumbnailUrl = '';
 let videoUrl = '';
 
 if (platform === 'youtube') {
-  embedUrl = `https://www.youtube.com/embed/${id}?rel=0&start=${start}`;
-  thumbnailUrl = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+  // 使用 nocookie 域名，更适合嵌入
+  embedUrl = `https://www.youtube-nocookie.com/embed/${id}?rel=0&start=${start}&enablejsapi=1`;
+  // 尝试 hqdefault 封面，如果不存在会回退
+  thumbnailUrl = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
   videoUrl = `https://www.youtube.com/watch?v=${id}`;
 } else if (platform === 'bilibili') {
   // 处理 BV 号或 AV 号

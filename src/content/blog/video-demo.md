@@ -17,16 +17,14 @@ featured: false
 
 在 Markdown 文件的任意位置添加以下格式的注释：
 
-```markdown
-<!-- video:youtube:VIDEO_ID:视频标题 -->
-<!-- video:bilibili:BVID:视频标题 -->
-```
+
 
 ### YouTube 视频示例
 
 下面是一个 YouTube 视频的嵌入演示：
 
-<!-- video:youtube:dQw4w9WgXcQ:YouTube 视频演示 -->
+
+<!-- video:youtube:dQw4w9WgXcQ:这里是youtube视频 -->
 
 ### Bilibili 视频示例
 

@@ -18,15 +18,33 @@ const { Content } = await render(post);
 const slug = post.id.replace(/\.md$/, '');
 const categorySlug = categorySlugMap[post.data.category] || post.data.category.toLowerCase();
 
-// 解析文章中的视频标记
-// 支持格式：<!-- video:youtube:VIDEO_ID --> 或 <!-- video:bilibili:BVID -->
-const videoRegex = /<!--\s*video:(youtube|bilibili):([^\s:]+)(?::([^\s>]+))?\s*-->/g;
-const videoMatches = [...post.body.matchAll(videoRegex)] || [];
-const videos = videoMatches.map(match => ({
-  platform: match[1] as 'youtube' | 'bilibili',
-  id: match[2],
-  title: match[3] || '视频'
-}));
+// 解析文章中的视频标记，并记录位置
+// 支持格式：<!-- video:youtube:VIDEO_ID:标题 --> 或 <!-- video:bilibili:BVID:标题 -->
+const videoRegex = /<!--\s*video:(youtube|bilibili):([^\s:]+)(?::([^\n]+?))?\s*-->/g;
+
+// 将视频标记替换为占位符，并收集视频信息
+let contentBody = post.body;
+const videos: { index: number; platform: 'youtube' | 'bilibili'; id: string; title: string }[] = [];
+let matchIndex = 0;
+
+contentBody = contentBody.replace(videoRegex, (match, platform, id, title) => {
+  const placeholder = `<!--VIDEO_PLACEHOLDER_${matchIndex}-->`;
+  videos.push({
+    index: matchIndex,
+    platform: platform as 'youtube' | 'bilibili',
+    id: id.trim(),
+    title: (title || '视频').trim()
+  });
+  matchIndex++;
+  return placeholder;
+});
+
+// 重新渲染修改后的内容
+// 我们需要在渲染后的 HTML 中替换占位符
+const { Content: ContentWithPlaceholders } = await render({
+  ...post,
+  body: contentBody
+});
 
 // 获取所有文章用于侧边栏和相关推荐
 const allPostsRaw = await getCollection('blog');
@@ -97,21 +115,22 @@ const detailImage = post.data.image.replace('800/400', '1200/600');
       <img src={detailImage} alt={post.data.title} class="w-full" />
     </figure>
 
-    <!-- Article Content -->
-    <div class="prose-article">
-      {/* 渲染视频组件（如果有） */}
-      {videos.length > 0 && (
-        <div class="videos-section">
-          {videos.map(video => (
-            <VideoEmbed 
-              platform={video.platform} 
-              id={video.id} 
-              title={video.title}
-            />
-          ))}
+    <!-- Article Content with Videos -->
+    <div class="prose-article article-content">
+      <ContentWithPlaceholders />
+    </div>
+
+    <!-- Video Components (hidden, will be moved by JS) -->
+    <div id="video-components" class="hidden">
+      {videos.map(video => (
+        <div data-video-index={video.index} class="video-wrapper">
+          <VideoEmbed 
+            platform={video.platform} 
+            id={video.id} 
+            title={video.title}
+          />
         </div>
-      )}
-      <Content />
+      ))}
     </div>
 
     <!-- Tags -->
@@ -157,4 +176,63 @@ const detailImage = post.data.image.replace('800/400', '1200/600');
       </div>
     </section>
   )}
+
+  <script define:vars={{ videoCount: videos.length }}>
+    // 页面加载后将视频组件移动到正确的位置
+    document.addEventListener('DOMContentLoaded', () => {
+      const articleContent = document.querySelector('.article-content');
+      const videoComponents = document.getElementById('video-components');
+      
+      if (!articleContent || !videoComponents) return;
+      
+      // 查找所有占位符并替换为对应的视频组件
+      for (let i = 0; i < videoCount; i++) {
+        const placeholderText = `<!--VIDEO_PLACEHOLDER_${i}-->`;
+        const placeholder = findPlaceholder(articleContent, placeholderText);
+        const videoWrapper = videoComponents.querySelector(`[data-video-index="${i}"]`);
+        
+        if (placeholder && videoWrapper) {
+          // 创建视频容器
+          const videoContainer = document.createElement('div');
+          videoContainer.className = 'my-6';
+          videoContainer.innerHTML = videoWrapper.innerHTML;
+          
+          // 替换占位符
+          placeholder.replaceWith(videoContainer);
+        }
+      }
+      
+      // 清理隐藏的容器
+      videoComponents.remove();
+    });
+    
+    // 辅助函数：查找包含特定文本的元素
+    function findPlaceholder(container, text) {
+      // 首先尝试查找包含该文本的 p 标签
+      const paragraphs = container.querySelectorAll('p');
+      for (const p of paragraphs) {
+        if (p.textContent.trim() === text) {
+          return p;
+        }
+      }
+      
+      // 如果没找到，使用 TreeWalker 遍历所有文本节点
+      const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
+      let node;
+      while (node = walker.nextNode()) {
+        if (node.textContent.includes(text)) {
+          // 返回包含该文本节点的段落或元素
+          let parent = node.parentElement;
+          while (parent && parent !== container) {
+            if (parent.tagName === 'P' || parent.tagName === 'DIV') {
+              return parent;
+            }
+            parent = parent.parentElement;
+          }
+          return node.parentElement;
+        }
+      }
+      return null;
+    }
+  </script>
 </BaseLayout>
