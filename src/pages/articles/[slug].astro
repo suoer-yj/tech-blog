@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
 import { categorySlugMap, tagSlugMap, slugToCategoryName, toPostData, type PostData } from '../../lib/slug-utils';
+import bilibiliCovers from '../../data/bilibili-covers.json';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -87,7 +88,7 @@ const detailImage = post.data.image.replace('800/400', '1200/600');
     </figure>
 
     <!-- Article Content -->
-    <div class="prose-article">
+    <div class="prose-article" id="article-content">
       <Content />
     </div>
 
@@ -136,7 +137,9 @@ const detailImage = post.data.image.replace('800/400', '1200/600');
   )}
 
   <!-- 视频嵌入脚本 -->
-  <script>
+  <script define:vars={{ bilibiliCovers }}>
+    // Bilibili 视频封面映射表（构建时从 JSON 导入）
+    
     function createVideoPlayer(container) {
       const platform = container.getAttribute('data-platform');
       const videoId = container.getAttribute('data-video-id');
@@ -154,6 +157,8 @@ const detailImage = post.data.image.replace('800/400', '1200/600');
       } else {
         const bvid = videoId.startsWith('BV') ? videoId : 'BV' + videoId;
         embedUrl = 'https://player.bilibili.com/player.html?bvid=' + bvid + '&page=1&high_quality=1&danmaku=0';
+        // 尝试从映射表获取封面，如果没有则使用占位符
+        thumbnailUrl = bilibiliCovers[videoId] || '';
       }
       
       const platformColor = isYoutube ? 'bg-red-600' : 'bg-pink-500';
@@ -162,8 +167,12 @@ const detailImage = post.data.image.replace('800/400', '1200/600');
       let coverHtml;
       if (isYoutube) {
         coverHtml = '<img src="' + thumbnailUrl + '" alt="' + title + '" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" onerror="this.style.display=\'none\'"/>';
+      } else if (thumbnailUrl) {
+        // Bilibili 有封面
+        coverHtml = '<img src="' + thumbnailUrl + '" alt="' + title + '" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" onerror="this.style.display=\'none\'"/>';
       } else {
-        coverHtml = '<div class="w-full h-full flex items-center justify-center bilibili-thumb" data-bvid="' + videoId + '"><div class="text-center"><svg class="w-16 h-16 mx-auto mb-2" style="color: #fb7299" viewBox="0 0 24 24" fill="currentColor"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-.174-.546c-.436-1.456-.234-2.78.606-3.972.84-1.192 1.986-1.856 3.44-1.992 1.452-.136 2.78.26 3.986 1.188.12.091.24.187.36.289l.574.507.574-.507c.12-.102.24-.198.36-.289 1.206-.928 2.534-1.324 3.986-1.188 1.454.136 2.6.8 3.44 1.992.84 1.192 1.042 2.516.606 3.972l-.174.546z"/></svg><span class="text-gray-400 text-sm">' + title + '</span></div></div>';
+        // Bilibili 无封面，显示占位符
+        coverHtml = '<div class="w-full h-full flex items-center justify-center bilibili-placeholder"><div class="text-center"><svg class="w-16 h-16 mx-auto mb-2" style="color: #fb7299" viewBox="0 0 24 24" fill="currentColor"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-.174-.546c-.436-1.456-.234-2.78.606-3.972.84-1.192 1.986-1.856 3.44-1.992 1.452-.136 2.78.26 3.986 1.188.12.091.24.187.36.289l.574.507.574-.507c.12-.102.24-.198.36-.289 1.206-.928 2.534-1.324 3.986-1.188 1.454.136 2.6.8 3.44 1.992.84 1.192 1.042 2.516.606 3.972l-.174.546z"/></svg><span class="text-gray-400 text-sm">' + title + '</span></div></div>';
       }
       
       container.innerHTML = '<div class="video-embed-wrapper my-6 rounded-xl overflow-hidden bg-gray-900 shadow-lg"><div class="video-container relative" style="padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000;"><div class="video-cover absolute inset-0 cursor-pointer group" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">' + coverHtml + '<div class="absolute inset-0 flex items-center justify-center"><div class="w-16 h-16 md:w-20 md:h-20 bg-white/90 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:bg-white" style="backdrop-filter: blur(4px);"><svg class="w-6 h-6 md:w-8 md:h-8 text-gray-900 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div><div class="absolute top-3 left-3 px-2 py-1 rounded text-xs font-medium text-white flex items-center gap-1 ' + platformColor + '">' + (isYoutube ? '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>' : '<svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-.174-.546c-.436-1.456-.234-2.78.606-3.972.84-1.192 1.986-1.856 3.44-1.992 1.452-.136 2.78.26 3.986 1.188.12.091.24.187.36.289l.574.507.574-.507c.12-.102.24-.198.36-.289 1.206-.928 2.534-1.324 3.986-1.188 1.454.136 2.6.8 3.44 1.992.84 1.192 1.042 2.516.606 3.972l-.174.546z"/></svg>') + platformLabel + '</div></div><iframe class="absolute inset-0 w-full h-full hidden" data-src="' + embedUrl + '" title="' + title + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>' + (title !== '视频' ? '<div class="px-4 py-3 bg-gray-50 border-t border-gray-200"><p class="text-sm text-gray-700 font-medium truncate">' + title + '</p></div>' : '') + '</div>';
@@ -178,9 +187,6 @@ const detailImage = post.data.image.replace('800/400', '1200/600');
           cover.style.display = 'none';
         });
       }
-      
-      // Bilibili 封面通过 API 获取会被 CORS 拦截，直接显示占位符即可
-      // 点击播放后由 Bilibili 播放器展示封面
     }
     
     document.addEventListener('DOMContentLoaded', function() {
