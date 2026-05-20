@@ -1,0 +1,182 @@
+---
+interface Props {
+  platform: 'youtube' | 'bilibili';
+  id: string;  // YouTube video ID 或 Bilibili BV/AV号
+  title?: string;
+  start?: number;  // 开始时间（秒）
+}
+
+const { platform, id, title = '视频', start = 0 } = Astro.props;
+
+// 构建嵌入 URL
+let embedUrl = '';
+let thumbnailUrl = '';
+let videoUrl = '';
+
+if (platform === 'youtube') {
+  embedUrl = `https://www.youtube.com/embed/${id}?rel=0&start=${start}`;
+  thumbnailUrl = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+  videoUrl = `https://www.youtube.com/watch?v=${id}`;
+} else if (platform === 'bilibili') {
+  // 处理 BV 号或 AV 号
+  const bvid = id.startsWith('BV') ? id : `BV${id}`;
+  embedUrl = `https://player.bilibili.com/player.html?bvid=${bvid}&page=1&high_quality=1&danmaku=0&t=${start}`;
+  thumbnailUrl = `https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`;  // 需要通过 API 获取
+  videoUrl = `https://www.bilibili.com/video/${bvid}`;
+}
+---
+
+<div class="video-embed-wrapper my-6 rounded-xl overflow-hidden bg-gray-900 shadow-lg">
+  {/* 视频容器 */}
+  <div class="video-container relative" style="padding-bottom: 56.25%;" data-platform={platform} data-id={id} data-embed-url={embedUrl}>
+    {/* 封面图 */}
+    <div class="video-cover absolute inset-0 cursor-pointer group" id={`video-cover-${platform}-${id}`}>
+      {platform === 'youtube' ? (
+        <img 
+          src={thumbnailUrl} 
+          alt={title}
+          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
+      ) : (
+        <div class="w-full h-full bg-gray-800 flex items-center justify-center bilibili-thumb" data-bvid={id}>
+          <div class="text-center">
+            <svg class="w-16 h-16 mx-auto text-pink-500 mb-2" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-.174-.546c-.436-1.456-.234-2.78.606-3.972.84-1.192 1.986-1.856 3.44-1.992 1.452-.136 2.78.26 3.986 1.188.12.091.24.187.36.289l.574.507.574-.507c.12-.102.24-.198.36-.289 1.206-.928 2.534-1.324 3.986-1.188 1.454.136 2.6.8 3.44 1.992.84 1.192 1.042 2.516.606 3.972l-.174.546zm-2.36 1.224c.16-.534.122-1.022-.116-1.464-.238-.442-.618-.742-1.14-.9-.522-.158-1.012-.092-1.47.2-.458.292-.832.738-1.122 1.338l-.346.746h4.07l-.346-.746c-.096-.214-.196-.414-.3-.6l-.23-.574zm-6.666 0c.16-.534.122-1.022-.116-1.464-.238-.442-.618-.742-1.14-.9-.522-.158-1.012-.092-1.47.2-.458.292-.832.738-1.122 1.338l-.346.746h4.07l-.346-.746c-.096-.214-.196-.414-.3-.6l-.23-.574zM5.333 6.347h13.334c1.054.026 1.92.378 2.596 1.054.676.676 1.028 1.542 1.054 2.596v7.36c-.026 1.054-.378 1.92-1.054 2.596-.676.676-1.542 1.028-2.596 1.054H5.333c-1.054-.026-1.92-.378-2.596-1.054-.676-.676-1.028-1.542-1.054-2.596v-7.36c.026-1.054.378-1.92 1.054-2.596.676-.676 1.542-1.028 2.596-1.054zM12 16.653c2.36 0 4.274-1.914 4.274-4.274S14.36 8.105 12 8.105s-4.274 1.914-4.274 4.274S9.64 16.653 12 16.653z"/>
+            </svg>
+            <span class="text-gray-400 text-sm">{title}</span>
+          </div>
+        </div>
+      )}
+      
+      {/* 播放按钮 */}
+      <div class="absolute inset-0 flex items-center justify-center">
+        <div class="play-button w-16 h-16 md:w-20 md:h-20 bg-white/90 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:bg-white">
+          <svg class="w-6 h-6 md:w-8 md:h-8 text-gray-900 ml-1" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        </div>
+      </div>
+      
+      {/* 平台标识 */}
+      <div class="absolute top-3 left-3 px-2 py-1 rounded text-xs font-medium text-white flex items-center gap-1" class:list={[platform === 'youtube' ? 'bg-red-600' : 'bg-pink-500']}>
+        {platform === 'youtube' ? (
+          <>
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+            YouTube
+          </>
+        ) : (
+          <>
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-.174-.546c-.436-1.456-.234-2.78.606-3.972.84-1.192 1.986-1.856 3.44-1.992 1.452-.136 2.78.26 3.986 1.188.12.091.24.187.36.289l.574.507.574-.507c.12-.102.24-.198.36-.289 1.206-.928 2.534-1.324 3.986-1.188 1.454.136 2.6.8 3.44 1.992.84 1.192 1.042 2.516.606 3.972l-.174.546z"/>
+            </svg>
+            哔哩哔哩
+          </>
+        )}
+      </div>
+    </div>
+    
+    {/* 嵌入的 iframe（初始隐藏） */}
+    <iframe
+      id={`video-iframe-${platform}-${id}`}
+      class="absolute inset-0 w-full h-full hidden"
+      data-src={embedUrl}
+      title={title}
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+    ></iframe>
+  </div>
+  
+  {/* 视频标题 */}
+  {title && title !== '视频' && (
+    <div class="px-4 py-3 bg-gray-50 border-t border-gray-200">
+      <p class="text-sm text-gray-700 font-medium truncate">{title}</p>
+    </div>
+  )}
+</div>
+
+<script>
+  // 处理视频封面点击事件
+  document.addEventListener('DOMContentLoaded', () => {
+    const videoCovers = document.querySelectorAll('.video-cover');
+    
+    videoCovers.forEach(cover => {
+      cover.addEventListener('click', function() {
+        const container = this.closest('.video-container');
+        const platform = container.dataset.platform;
+        const id = container.dataset.id;
+        const iframe = container.querySelector(`#video-iframe-${platform}-${id}`);
+        
+        if (iframe && iframe.dataset.src) {
+          // 设置 iframe src 加载视频
+          iframe.src = iframe.dataset.src + '&autoplay=1';
+          iframe.classList.remove('hidden');
+          this.style.display = 'none';
+        }
+      });
+    });
+    
+    // 获取 Bilibili 视频封面
+    const bilibiliThumbs = document.querySelectorAll('.bilibili-thumb');
+    bilibiliThumbs.forEach(async (thumb) => {
+      const bvid = thumb.dataset.bvid;
+      if (bvid) {
+        try {
+          const response = await fetch(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`);
+          const data = await response.json();
+          if (data.data && data.data.pic) {
+            const img = document.createElement('img');
+            img.src = data.data.pic;
+            img.alt = '视频封面';
+            img.className = 'w-full h-full object-cover transition-transform duration-300 group-hover:scale-105';
+            img.loading = 'lazy';
+            thumb.innerHTML = '';
+            thumb.appendChild(img);
+          }
+        } catch (e) {
+          console.log('Failed to fetch Bilibili thumbnail:', e);
+        }
+      }
+    });
+  });
+</script>
+
+<style>
+  .video-embed-wrapper {
+    position: relative;
+  }
+  
+  .video-container {
+    position: relative;
+    height: 0;
+    overflow: hidden;
+    background: #000;
+  }
+  
+  .video-cover {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  }
+  
+  .video-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .play-button {
+    backdrop-filter: blur(4px);
+  }
+  
+  .play-button:hover {
+    transform: scale(1.1);
+  }
+  
+  iframe {
+    border: none;
+  }
+</style>

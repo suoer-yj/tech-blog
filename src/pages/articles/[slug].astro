@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
 import { categorySlugMap, tagSlugMap, slugToCategoryName, toPostData, type PostData } from '../../lib/slug-utils';
+import VideoEmbed from '../../components/VideoEmbed.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -16,6 +17,16 @@ const { Content } = await render(post);
 
 const slug = post.id.replace(/\.md$/, '');
 const categorySlug = categorySlugMap[post.data.category] || post.data.category.toLowerCase();
+
+// 解析文章中的视频标记
+// 支持格式：<!-- video:youtube:VIDEO_ID --> 或 <!-- video:bilibili:BVID -->
+const videoRegex = /<!--\s*video:(youtube|bilibili):([^\s:]+)(?::([^\s>]+))?\s*-->/g;
+const videoMatches = [...post.body.matchAll(videoRegex)] || [];
+const videos = videoMatches.map(match => ({
+  platform: match[1] as 'youtube' | 'bilibili',
+  id: match[2],
+  title: match[3] || '视频'
+}));
 
 // 获取所有文章用于侧边栏和相关推荐
 const allPostsRaw = await getCollection('blog');
@@ -88,6 +99,18 @@ const detailImage = post.data.image.replace('800/400', '1200/600');
 
     <!-- Article Content -->
     <div class="prose-article">
+      {/* 渲染视频组件（如果有） */}
+      {videos.length > 0 && (
+        <div class="videos-section">
+          {videos.map(video => (
+            <VideoEmbed 
+              platform={video.platform} 
+              id={video.id} 
+              title={video.title}
+            />
+          ))}
+        </div>
+      )}
       <Content />
     </div>
 
